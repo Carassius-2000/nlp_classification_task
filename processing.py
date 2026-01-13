@@ -1,11 +1,23 @@
 import re
-from pymorphy3 import MorphAnalyzer
+
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from pymorphy3 import MorphAnalyzer
 
 
 def check_download():
+    """
+    Проверяет наличие ресурсов NLTK и загружает их при необходимости.
+
+    Если какой-либо ресурс отсутствует, он автоматически загружается в фоновом
+    режиме без вывода сообщений в консоль.
+
+    Raises
+    ------
+    LookupError
+        Если модули NLTK не найдены в локальном хранилище.
+    """
     resources = [
         ("punkt", "tokenizers/punkt"),
         ("punkt_tab", "tokenizers/punkt_tab"),
@@ -19,6 +31,23 @@ def check_download():
 
 
 def text_preprocessing(text_series):
+    """
+    Предобрабатывает текстовые данные из Series.
+
+    Функция выполняет очистку от пунктуации, приведение к нижнему регистру, удаление
+    стоп-слов и лемматизацию. Для английских стоп-слов также предусмотрена
+    фильтрация.
+
+    Parameters
+    ----------
+    text_series : pandas.Series
+        Столбец, содержащий текстовые данные для обработки.
+
+    Returns
+    -------
+    pandas.Series
+        Предобработанные тексты.
+    """
     check_download()
     text_without_punctuation = text_series.str.lower().str.replace(
         re.compile(r"[^\w\s]+"), " ", regex=True
